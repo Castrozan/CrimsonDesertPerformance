@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -uo pipefail
+script_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+paused_units=()
+for unit in ${CDPERF_PAUSE_USER_UNITS-hex.service}; do
+  if systemctl --user is-active -q "$unit" && systemctl --user stop "$unit"; then
+    paused_units+=("$unit")
+  fi
+done
+resume_paused_units() {
+  if ((${#paused_units[@]})); then
+    systemctl --user start "${paused_units[@]}"
+  fi
+}
+trap resume_paused_units EXIT
+"$script_directory/cdperf-free-memory" >&2
+"$@"

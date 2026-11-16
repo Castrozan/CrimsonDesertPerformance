@@ -1,0 +1,30 @@
+[19:19:37.879] cdperf 0.1.0 loaded
+[19:19:38.368] QueryVideoMemoryInfo local: calls 1 | budget real 3447 MiB reported 2560 MiB | usage 0 MiB
+[19:19:38.369] video memory hook: installed, local budget cap 2560 MiB (0 = off)
+[19:19:49.558] QueryVideoMemoryInfo non-local: calls 1 | budget real 11502 MiB reported 11502 MiB | usage 33 MiB
+[19:20:40.061] QueryVideoMemoryInfo local: calls 4 | budget real 3344 MiB reported 2560 MiB | usage 1797 MiB
+[19:20:40.061] QueryVideoMemoryInfo non-local: calls 3 | budget real 11502 MiB reported 11502 MiB | usage 223 MiB
+[19:21:10.064] QueryVideoMemoryInfo local: calls 17298 | budget real 3256 MiB reported 2560 MiB | usage 2694 MiB
+[19:21:10.066] QueryVideoMemoryInfo non-local: calls 15534 | budget real 11502 MiB reported 11502 MiB | usage 313 MiB
+[19:21:40.069] QueryVideoMemoryInfo local: calls 38478 | budget real 3256 MiB reported 2560 MiB | usage 2694 MiB
+[19:21:40.069] QueryVideoMemoryInfo non-local: calls 34596 | budget real 11502 MiB reported 11502 MiB | usage 313 MiB
+[19:22:10.068] QueryVideoMemoryInfo local: calls 58734 | budget real 3269 MiB reported 2560 MiB | usage 2626 MiB
+[19:22:10.069] QueryVideoMemoryInfo non-local: calls 52826 | budget real 11502 MiB reported 11502 MiB | usage 301 MiB
+[19:22:40.083] QueryVideoMemoryInfo local: calls 71417 | budget real 3289 MiB reported 2560 MiB | usage 2801 MiB
+[19:22:40.085] QueryVideoMemoryInfo non-local: calls 64241 | budget real 11502 MiB reported 11502 MiB | usage 225 MiB
+[19:23:10.084] QueryVideoMemoryInfo local: calls 76008 | budget real 3269 MiB reported 2560 MiB | usage 3087 MiB
+[19:23:10.085] QueryVideoMemoryInfo non-local: calls 68044 | budget real 11502 MiB reported 11502 MiB | usage 225 MiB
+[19:23:40.089] QueryVideoMemoryInfo local: calls 82770 | budget real 3265 MiB reported 2560 MiB | usage 3229 MiB
+[19:23:40.090] QueryVideoMemoryInfo non-local: calls 73574 | budget real 11502 MiB reported 11502 MiB | usage 225 MiB
+[19:24:10.088] QueryVideoMemoryInfo local: calls 94202 | budget real 3270 MiB reported 2560 MiB | usage 3243 MiB
+[19:24:10.117] QueryVideoMemoryInfo non-local: calls 82934 | budget real 11502 MiB reported 11502 MiB | usage 225 MiB
+[19:24:40.091] QueryVideoMemoryInfo local: calls 106554 | budget real 3270 MiB reported 2560 MiB | usage 3243 MiB
+[19:24:40.117] QueryVideoMemoryInfo non-local: calls 93042 | budget real 11502 MiB reported 11502 MiB | usage 225 MiB
+[19:25:10.092] QueryVideoMemoryInfo local: calls 118707 | budget real 3270 MiB reported 2560 MiB | usage 3243 MiB
+[19:25:10.120] QueryVideoMemoryInfo non-local: calls 102986 | budget real 11502 MiB reported 11502 MiB | usage 225 MiB
+[19:25:40.096] QueryVideoMemoryInfo local: calls 130752 | budget real 3270 MiB reported 2560 MiB | usage 3243 MiB
+[19:25:40.124] QueryVideoMemoryInfo non-local: calls 112841 | budget real 11502 MiB reported 11502 MiB | usage 225 MiB
+[19:26:10.097] QueryVideoMemoryInfo local: calls 142787 | budget real 3270 MiB reported 2560 MiB | usage 3243 MiB
+[19:26:10.142] QueryVideoMemoryInfo non-local: calls 122687 | budget real 11502 MiB reported 11502 MiB | usage 225 MiB
+[19:26:40.095] QueryVideoMemoryInfo local: calls 154800 | budget real 3270 MiB reported 2560 MiB | usage 3243 MiB
+[19:26:40.148] QueryVideoMemoryInfo non-local: calls 132525 | budget real 11502 MiB reported 11502 MiB | usage 225 MiB

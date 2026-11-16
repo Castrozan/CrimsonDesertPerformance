@@ -1,0 +1,4 @@
+.deep-work/
+build/
+__pycache__/
+.agent-brief.md

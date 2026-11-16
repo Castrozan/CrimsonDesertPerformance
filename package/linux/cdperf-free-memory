@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+if ! sudo -n sh -c 'sync; echo 3 > /proc/sys/vm/drop_caches; echo 1 > /proc/sys/vm/compact_memory'; then
+  echo "cdperf: sudo -n refused; page cache not dropped, memory not compacted" >&2
+fi
+free -m | sed -n '2,3p'
