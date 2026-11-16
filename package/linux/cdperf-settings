@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+import argparse
+import re
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+DEFAULT_SETTINGS = (
+    Path.home()
+    / ".local/share/Steam/steamapps/compatdata/3321460/pfx/drive_c/users/steamuser"
+    / "AppData/Local/Pearl Abyss/CD/save/user_engine_option_save.xml"
+)
+FRAME_GENERATION_ELEMENT = re.compile(
+    r'^[ \t]*<OptionStringVector Name="_frameGenerationModeSelect" _value="[^"]*"/>\r?\n',
+    re.MULTILINE,
+)
+
+
+def backup_path(settings: Path) -> Path:
+    return settings.with_name(settings.name + ".cdperf-backup")
+
+
+def game_is_running() -> bool:
+    return subprocess.run(["pgrep", "-x", "CrimsonDesert.e"], capture_output=True).returncode == 0
+
+
+def apply(settings: Path) -> str:
+    text = settings.read_text(encoding="utf-8")
+    changed = FRAME_GENERATION_ELEMENT.sub("", text)
+    if changed == text:
+        return "frame generation already off"
+    if not backup_path(settings).exists():
+        shutil.copy2(settings, backup_path(settings))
+    settings.write_text(changed, encoding="utf-8")
+    return f"frame generation off; original kept at {backup_path(settings)}"
+
+
+def revert(settings: Path) -> str:
+    backup = backup_path(settings)
+    if not backup.exists():
+        return "nothing to revert"
+    shutil.move(backup, settings)
+    return "original settings restored"
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Turn Crimson Desert frame generation off, or restore the original settings.")
+    parser.add_argument("action", choices=["apply", "revert"])
+    parser.add_argument("--settings", type=Path, default=DEFAULT_SETTINGS)
+    arguments = parser.parse_args()
+    if game_is_running():
+        print("close the game first: it rewrites its settings file on exit", file=sys.stderr)
+        return 1
+    print(apply(arguments.settings) if arguments.action == "apply" else revert(arguments.settings))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
