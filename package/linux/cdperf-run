@@ -2,7 +2,11 @@
 set -uo pipefail
 script_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 paused_units=()
-for unit in ${CDPERF_PAUSE_USER_UNITS-hex.service}; do
+for unit in ${CDPERF_PAUSE_USER_UNITS:-}; do
+  if [[ "$unit" == hex || "$unit" == hex.* ]]; then
+    echo "cdperf: never pausing $unit (voice wake depends on it)" >&2
+    continue
+  fi
   if systemctl --user is-active -q "$unit" && systemctl --user stop "$unit"; then
     paused_units+=("$unit")
   fi

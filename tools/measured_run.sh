@@ -18,7 +18,6 @@ if pgrep -x CrimsonDesert.e >/dev/null; then
   for _ in $(seq 60); do pgrep -x CrimsonDesert.e >/dev/null || break; sleep 1; done
   sleep 5
 fi
-systemctl --user stop ${CDPERF_PAUSE_USER_UNITS-hex.service} 2>/dev/null || true
 "$repository_root/package/linux/cdperf-free-memory"
 systemd-run --user --unit="cdperf-$run_label" --collect -p Nice=19 \
   python3 "$repository_root/tools/sample_metrics.py" "$output" --interval 2 --duration "$sample_seconds"
