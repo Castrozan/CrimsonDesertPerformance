@@ -42,11 +42,12 @@ the budget comes straight from the Vulkan driver.
 
 ## Measuring
 
-`tools/start_measured_run.sh <label>` closes the game, frees host memory, starts `tools/sample_metrics.py` and launches
-the game through Steam. Every 2 s the sampler records the frame rate (from the co-op mod's overlay frame counter in
-`cdmp.log`), game and total VRAM (`nvidia-smi`), game resident memory, available RAM and swap. Load the same save from
-the title screen (`tools/press_pad.py a` presses A on a virtual pad), stand still, then compare runs with
-`tools/summarize_runs.py`, which reports the first 160 s in the world. Results and raw samples live in `measurements/`.
+`tools/measured_run.sh <label>` takes the shared game lock (`~/.local/share/cdmp/game.lock`; it refuses while another
+session holds it), closes the game, frees host memory, starts `tools/sample_metrics.py`, launches the game through
+Steam and presses Play on a virtual pad until the co-op mod reports the character in the world. `tools/game_lock.sh
+release` hands the game back. Every 2 s the sampler records the frame rate (from the co-op mod's overlay frame counter in
+`cdmp.log`), game and total VRAM (`nvidia-smi`), game resident memory, available RAM and swap. The character stands
+still; compare runs with `tools/summarize_runs.py`, which reports the first 160 s in the world. Results and raw samples live in `measurements/`.
 
 ## Settings that do nothing
 
