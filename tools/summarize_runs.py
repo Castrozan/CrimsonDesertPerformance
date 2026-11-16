@@ -10,7 +10,7 @@ def numbers(rows: list[dict], column: str) -> list[float]:
     return [float(row[column]) for row in rows if row[column] not in ("", "None")]
 
 
-def summarize(path: Path, window_seconds: float) -> dict:
+def summarize(path: Path, skip_seconds: float, window_seconds: float) -> dict:
     with path.open() as handle:
         rows = list(csv.DictReader(handle))
     game_rows = [row for row in rows if row["game_pid"] not in ("", "0")]
@@ -22,7 +22,7 @@ def summarize(path: Path, window_seconds: float) -> dict:
         world_rows = [
             row
             for row in world_rows
-            if float(row["unix_time"]) - start <= window_seconds
+            if skip_seconds <= float(row["unix_time"]) - start <= skip_seconds + window_seconds
         ]
     frame_rates = numbers(world_rows, "frames_per_second")
     return {
@@ -54,9 +54,10 @@ def summarize(path: Path, window_seconds: float) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("runs", type=Path, nargs="+")
+    parser.add_argument("--skip", type=float, default=0.0)
     parser.add_argument("--window", type=float, default=180.0)
     arguments = parser.parse_args()
-    summaries = [summarize(path, arguments.window) for path in arguments.runs]
+    summaries = [summarize(path, arguments.skip, arguments.window) for path in arguments.runs]
     columns = list(summaries[0])
     print("| " + " | ".join(columns) + " |")
     print("|" + "---|" * len(columns))
