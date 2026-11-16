@@ -8,6 +8,10 @@ pad_python="$repository_root/build/gcroots/python-evdev/bin/python3"
 output="$repository_root/measurements/$(date +%Y-%m-%d)-$run_label.csv"
 steam_skip_button=(965 592)
 
+fresh_log_has() {
+  [ -f "$coop_log" ] && [ "$(stat -c %Y "$coop_log")" -ge "$launch_time" ] && grep -q "$1" "$coop_log"
+}
+
 "$repository_root/tools/game_lock.sh" take
 if pgrep -x CrimsonDesert.e >/dev/null; then
   pkill -x CrimsonDesert.e
@@ -31,15 +35,15 @@ echo "game process after $(( $(date +%s) - launch_time )) s"
 
 play_time=""
 for _ in $(seq 60); do
-  grep -q 'Local: pos' "$coop_log" 2>/dev/null && break
+  fresh_log_has 'Local: pos' && break
   pgrep -x CrimsonDesert.e >/dev/null || { echo "game exited during load" >&2; exit 1; }
-  if grep -q 'Overlay: installed true' "$coop_log" 2>/dev/null; then
+  if fresh_log_has 'Overlay: installed true'; then
     hyprctl dispatch focuswindow 'title:^Crimson Desert$' >/dev/null
     "$pad_python" "$repository_root/tools/press_pad.py" a
     play_time="${play_time:-$(date +%s)}"
   fi
   sleep 8
 done
-grep -q 'Local: pos' "$coop_log" || { echo "never reached the world" >&2; exit 1; }
-echo "in world $(( $(date +%s) - ${play_time:-$launch_time} )) s after first Play press"
+fresh_log_has 'Local: pos' || { echo "never reached the world" >&2; exit 1; }
+echo "in world $(( $(date +%s) - launch_time )) s after launch, $(( $(date +%s) - ${play_time:-$launch_time} )) s after first Play press"
 echo "$output"
