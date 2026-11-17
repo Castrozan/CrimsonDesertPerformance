@@ -18,12 +18,14 @@ overlay, so with frame generation on, generated frames are included and the rate
 | 4 | r4 frame generation off | stopped | 30.9 / 40.1 / 8.3 | 3145 | 3649 | 179 |
 | 5 | r5 baseline repeat | running | 46.7 / 49.3 / 19.7 | 3327 | 3764 | 226 |
 | 6 | r6 frame generation off | running | 28.7 / 32.4 / 7.8 | 3135 | 3606 | 191 |
+| 7 | r7 older DLSS model (`NVIDIA DLSS` instead of `NVIDIA DLSS 4.0`) | running | 27.2 / 28.0 / 13.7 | 3343 | 3768 | 265 |
 
-The 160 s window starting 240 s later (the forest after the transition) gives the same picture: r5 52.0 / 49.5 / 36.6
-and r6 29.9 / 34.9 / 10.8.
+The 160 s window starting 240 s later (the forest after the transition) gives the same picture: r5 52.0 / 49.5 / 36.6,
+r6 29.9 / 34.9 / 10.8, and r7 27.8 / 28.0 / 26.7.
 
-Every run loaded the save. The kernel logged `NV_ERR_NO_MEMORY` during game start-up in r1 (19:10:11), r5 (20:12:25)
-and r6 (20:24:44), and the game survived each time.
+Every prepped launch on 2026-11-16 reached the world: the seven runs, two restore checks, and one Steam launch through
+`cdperf-run`. The kernel logs `NV_ERR_NO_MEMORY` lines at nearly every launch, prepped or not, so those lines alone do
+not mark a crash.
 
 ## What the runs show
 
@@ -34,6 +36,8 @@ and r6 (20:24:44), and the game survived each time.
   stopped and by 192 MiB with hex running. Total VRAM fell by 112 to 158 MiB. Presented frames roughly halved and the
   minimum dropped, because frame generation's extra frames are gone. In the in-game stats panel, GPU frame time on the
   same view went from 51.04 ms to 21.91 ms.
+- **Older DLSS model: slower, no VRAM saving.** Switching from DLSS 4.0 to the older model halved the presented frame
+  rate in both windows and left VRAM unchanged, so DLSS 4.0 stays.
 - **Run-to-run noise is large.** The two baselines (r1 and r5) differ by 20 fps mean. Only the VRAM differences
   repeat across pairs, so they are the only effect this data supports.
 - **Host memory.** Background services decide how much RAM and VRAM the game gets. With the voice service `hex` held
