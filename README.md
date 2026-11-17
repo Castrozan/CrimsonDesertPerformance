@@ -7,7 +7,7 @@ overflows a 4 GB card into pinned system RAM. When the host runs short of RAM, t
 The package has two independent parts, both in `package/linux/`:
 
 - `cdperf-run` is a Steam launch wrapper. Before the game starts it drops the page cache and compacts memory, so the
-  driver can find the contiguous pinned pages it needs. It can also stop user services and Docker containers you name
+  driver can find the contiguous pinned pages it needs. It can also stop user and system services and Docker containers you name
   for the length of the session, and starts them again when the game exits.
 - `cdperf-settings` turns frame generation off in the game's settings file, and restores the original. On a 4 GB card
   this frees about 200 MiB of VRAM, but you see roughly half as many frames: frame generation's extra frames are gone.
@@ -27,12 +27,14 @@ The measurements behind these choices, and the levers that did not work, are in
 
    ```sh
    CDPERF_PAUSE_USER_UNITS="syncthing.service"
+   CDPERF_STOP_SYSTEM_UNITS="media-on-demand.timer"
    CDPERF_STOP_CONTAINERS_MATCHING="^(arr-|stremio-)"
    ```
 
-   `CDPERF_PAUSE_USER_UNITS` lists user units, space separated. `CDPERF_STOP_CONTAINERS_MATCHING` is an extended
-   regular expression matched against running Docker container names. A unit named `hex` is never paused, because
-   voice wake depends on it.
+   `CDPERF_PAUSE_USER_UNITS` and `CDPERF_STOP_SYSTEM_UNITS` list user and system units, space separated; system units
+   need passwordless `sudo`. Stop any timer or service that would bring a stopped container back.
+   `CDPERF_STOP_CONTAINERS_MATCHING` is an extended regular expression matched against running Docker container
+   names. A unit named `hex` is never stopped, because voice wake depends on it.
 5. Optionally, with the game closed, run `cdperf-settings apply` to turn frame generation off. The original file is
    kept next to it as `user_engine_option_save.xml.cdperf-backup`.
 

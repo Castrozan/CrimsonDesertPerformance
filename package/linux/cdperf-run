@@ -17,6 +17,21 @@ for unit in ${CDPERF_PAUSE_USER_UNITS:-}; do
   fi
 done
 
+run_outside_steam_no_new_privileges() {
+  systemd-run --user --wait --collect --quiet --pipe "$@"
+}
+
+stopped_system_units=()
+for unit in ${CDPERF_STOP_SYSTEM_UNITS:-}; do
+  if [[ "$unit" == hex || "$unit" == hex.* ]]; then
+    echo "cdperf: never stopping $unit (voice wake depends on it)" >&2
+    continue
+  fi
+  if systemctl is-active -q "$unit" && run_outside_steam_no_new_privileges sudo -n systemctl stop "$unit"; then
+    stopped_system_units+=("$unit")
+  fi
+done
+
 stopped_containers=()
 if [[ -n "${CDPERF_STOP_CONTAINERS_MATCHING:-}" ]]; then
   mapfile -t matching_containers < <(docker ps --format '{{.Names}}' | grep -E -- "$CDPERF_STOP_CONTAINERS_MATCHING")
@@ -33,12 +48,11 @@ resume_paused_work() {
   if ((${#stopped_containers[@]})); then
     docker start "${stopped_containers[@]}" >/dev/null
   fi
-}
-
-free_memory_outside_steam_no_new_privileges() {
-  systemd-run --user --wait --collect --quiet --pipe "$script_directory/cdperf-free-memory"
+  if ((${#stopped_system_units[@]})); then
+    run_outside_steam_no_new_privileges sudo -n systemctl start "${stopped_system_units[@]}"
+  fi
 }
 
 trap resume_paused_work EXIT
-free_memory_outside_steam_no_new_privileges >&2
+run_outside_steam_no_new_privileges "$script_directory/cdperf-free-memory" >&2
 "$@"
