@@ -16,6 +16,9 @@ resume_paused_units() {
     systemctl --user start "${paused_units[@]}"
   fi
 }
+free_memory_outside_steam_no_new_privileges() {
+  systemd-run --user --wait --collect --quiet --pipe "$script_directory/cdperf-free-memory"
+}
 trap resume_paused_units EXIT
-"$script_directory/cdperf-free-memory" >&2
+free_memory_outside_steam_no_new_privileges >&2
 "$@"
