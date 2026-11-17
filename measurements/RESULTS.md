@@ -43,7 +43,7 @@ not mark a crash.
 - **Host memory.** Background services decide how much RAM and VRAM the game gets. With the voice service `hex` held
   at 723 MiB of VRAM, total VRAM use was 3765 MiB; without it, 3028 MiB. hex must keep running on this machine, so
   the package never pauses it.
-- **Swap.** At 22:0x, with the game in the world, 11.9 GB of swap was in use, and 2.8 GB of it was the game's own
+- **Swap.** At about 21:52, with the game in the world, 11.9 GB of swap was in use, and 2.8 GB of it was the game's own
   memory. Stopping the 13 media containers (arr and stremio) cut swap use to 9.65 GB and raised available RAM from
   2614 to 3125 MiB. That is why the wrapper can stop containers for the session.
 
