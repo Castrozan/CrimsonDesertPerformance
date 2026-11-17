@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -uo pipefail
 script_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+configuration="${XDG_CONFIG_HOME:-$HOME/.config}/cdperf/config"
+if [[ -f "$configuration" ]]; then
+  source "$configuration"
+fi
+
 paused_units=()
 for unit in ${CDPERF_PAUSE_USER_UNITS:-}; do
   if [[ "$unit" == hex || "$unit" == hex.* ]]; then
@@ -11,14 +16,29 @@ for unit in ${CDPERF_PAUSE_USER_UNITS:-}; do
     paused_units+=("$unit")
   fi
 done
-resume_paused_units() {
+
+stopped_containers=()
+if [[ -n "${CDPERF_STOP_CONTAINERS_MATCHING:-}" ]]; then
+  mapfile -t matching_containers < <(docker ps --format '{{.Names}}' | grep -E -- "$CDPERF_STOP_CONTAINERS_MATCHING")
+  if ((${#matching_containers[@]})) && docker stop "${matching_containers[@]}" >/dev/null; then
+    stopped_containers=("${matching_containers[@]}")
+    echo "cdperf: stopped ${#stopped_containers[@]} containers for this session" >&2
+  fi
+fi
+
+resume_paused_work() {
   if ((${#paused_units[@]})); then
     systemctl --user start "${paused_units[@]}"
   fi
+  if ((${#stopped_containers[@]})); then
+    docker start "${stopped_containers[@]}" >/dev/null
+  fi
 }
+
 free_memory_outside_steam_no_new_privileges() {
   systemd-run --user --wait --collect --quiet --pipe "$script_directory/cdperf-free-memory"
 }
-trap resume_paused_units EXIT
+
+trap resume_paused_work EXIT
 free_memory_outside_steam_no_new_privileges >&2
 "$@"

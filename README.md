@@ -7,8 +7,8 @@ overflows a 4 GB card into pinned system RAM. When the host runs short of RAM, t
 The package has two independent parts, both in `package/linux/`:
 
 - `cdperf-run` is a Steam launch wrapper. Before the game starts it drops the page cache and compacts memory, so the
-  driver can find the contiguous pinned pages it needs. It can also pause user services you name for the length of
-  the session, and resumes them when the game exits.
+  driver can find the contiguous pinned pages it needs. It can also stop user services and Docker containers you name
+  for the length of the session, and starts them again when the game exits.
 - `cdperf-settings` turns frame generation off in the game's settings file, and restores the original. On a 4 GB card
   this frees about 200 MiB of VRAM, but you see roughly half as many frames: frame generation's extra frames are gone.
   Use it if loads run out of memory; skip it if smoothness matters more.
@@ -21,21 +21,30 @@ The measurements behind these choices, and the levers that did not work, are in
 1. Copy the scripts onto your PATH: `install -Dm755 package/linux/cdperf-* -t ~/.local/bin/`.
 2. Make sure `sudo -n sh -c 'echo 3 > /proc/sys/vm/drop_caches'` works without a password. If it doesn't, the
    wrapper skips the cache drop and says so on stderr.
-3. In Steam, go to Crimson Desert, Properties, General, Launch Options, and set `~/.local/bin/cdperf-run %command%`.
-   To pause services while you play, list them, space separated, in `CDPERF_PAUSE_USER_UNITS`, for example
-   `CDPERF_PAUSE_USER_UNITS="syncthing.service" ~/.local/bin/cdperf-run %command%`. A unit named `hex` is never paused,
-   because voice wake depends on it.
-4. Optionally, with the game closed, run `cdperf-settings apply` to turn frame generation off. The original file is
+3. In Steam, go to Crimson Desert, Properties, General, Launch Options, and set
+   `/home/<you>/.local/bin/cdperf-run %command%` (use the absolute path).
+4. To free more memory while you play, create `~/.config/cdperf/config` (a shell file the wrapper sources):
+
+   ```sh
+   CDPERF_PAUSE_USER_UNITS="syncthing.service"
+   CDPERF_STOP_CONTAINERS_MATCHING="^(arr-|stremio-)"
+   ```
+
+   `CDPERF_PAUSE_USER_UNITS` lists user units, space separated. `CDPERF_STOP_CONTAINERS_MATCHING` is an extended
+   regular expression matched against running Docker container names. A unit named `hex` is never paused, because
+   voice wake depends on it.
+5. Optionally, with the game closed, run `cdperf-settings apply` to turn frame generation off. The original file is
    kept next to it as `user_engine_option_save.xml.cdperf-backup`.
 
 ## Uninstall
 
 1. With the game closed, run `cdperf-settings revert` to restore the original settings file.
 2. Clear the Launch Options field in Steam.
-3. Delete `~/.local/bin/cdperf-run`, `~/.local/bin/cdperf-free-memory` and `~/.local/bin/cdperf-settings`.
+3. Delete `~/.local/bin/cdperf-run`, `~/.local/bin/cdperf-free-memory`, `~/.local/bin/cdperf-settings` and
+   `~/.config/cdperf/`.
 
-Paused services start again when the game exits, so nothing else is left behind. The co-op mod is untouched by
-either part.
+Paused services and stopped containers start again when the game exits, so nothing else is left behind. The co-op
+mod is untouched by either part.
 
 ## Measuring
 
